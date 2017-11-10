@@ -5,5 +5,9 @@ def call(){
   // some rules will be now error and warnings don't stop the build but mark it unstable
 
   // TODO: either add own script in package scripts or run linting manually here to be sure no one 'cheated linting'
-  sh "npm run tslint"
+  if (env.HAS_LINT.toBoolean()){
+    sh "npm run lint"
+  } else {
+    echo "No Linter to run"
+  }
 }

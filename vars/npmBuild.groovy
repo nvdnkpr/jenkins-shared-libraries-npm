@@ -8,38 +8,30 @@ def call() {
         steps {
           // Read Configuration
           readConfiguration()
-          error 'intentional abort'
           
           // set and get info about this build
-          setGitConfig(env.GIT_NAME, env.GIT_MAIL)
           getRepoInfo()
           getBuildContext()
 
           // checkout code from SCM
-          checkout([
-            $class: 'GitSCM',
-            branches: [[name: "*/${env.REAL_BRANCH_NAME}"]],
-            extensions: [
-              [$class: 'CleanBeforeCheckout'],
-              [$class: 'LocalBranch', localBranch: "${env.REAL_BRANCH_NAME}"]
-            ]
-          ])
+          checkout scm
 
           // Setup Tools
-          setupTools()          
+          setupTools()
         }
       }
       stage('Prepare'){
         steps {
           // package
           checkPackageJson()
-          
           echo sh(script: 'env|sort', returnStdout: true)
-
+          
           // update packages
           updateNPMPackages()
+          // error 'updatePackages'
 
-          // runLinter()
+          runLinter()
+          // error 'linter'
         }
         // post {
         //   success {
@@ -50,16 +42,21 @@ def call() {
       stage('Build'){
         steps {
           compileMain()
+          error 'compileMain'
           compileAndDeployE2E()
+          error 'compileAndDeployE2E'
         }
       }
 
       stage('Test'){
         steps {
           runUnitTests()
+          error 'runUnitTests'
           runE2ETests()
+          error 'runE2ETests'
 
           send2SonarQube()
+          error 'SonarQube'
         }
         // post {
         //   success {
@@ -70,6 +67,7 @@ def call() {
       stage('Publish'){
         steps {
           publish2NpmRepo()
+          error 'publish2NpmRepo'
         }
         // Publish to Nexus
       }

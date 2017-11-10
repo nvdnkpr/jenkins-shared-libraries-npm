@@ -9,25 +9,28 @@ def call(){
       withNPM(npmrcConfig: env.PUBLISHING_NPMRC_CONFIG) {
         // set necessary credentials in global config
         sh 'echo "/n" >> .npmrc'
-        sh "echo _auth=${env.NPM_TOKEN} >> .npmrc"
+        sh "echo _auth=$NPM_TOKEN >> .npmrc"
         
         // different publishin ways for different branches
-        def version, npmChannel
         def branchType = env.REAL_BRANCH_NAME.split("/")[0]
-        if (['develop', 'release', 'master'].containsValue(branchType)){
+        def version = env.PACKAGE_JSON_VERSION
+        def npmChannel = "latest"
+
+        def isPublishingBranch = ['develop', 'release', 'master'].contains(branchType)
+        if (isPublishingBranch){
           switch(branchType) {
             case 'develop':
-              version = "${env.PROJECT_VERSION}-${env.PUBLISHING_DEVELOP_BUILD_TAG}.${env.BUILD_NUMBER}"
+              version = "${env.PACKAGE_JSON_VERSION}-${env.PUBLISHING_DEVELOP_BUILD_TAG}.${env.BUILD_NUMBER}"
               npmChannel = env.PUBLISHING_DEVELOP_NPM_CHANNEL
               break
+
             case 'release':
-              version = "${env.PROJECT_VERSION}-${env.PUBLISHING_RELEASE_BUILD_TAG}.${env.BUILD_NUMBER}"
+              version = "${env.PACKAGE_JSON_VERSION}-${env.PUBLISHING_RELEASE_BUILD_TAG}.${env.BUILD_NUMBER}"
               npmChannel = env.PUBLISHING_RELEASE_NPM_CHANNEL
               break
             
             case 'master':
-              version = env.PROJECT_VERSION
-              npmChannel = 'latest'
+              // the variables were already defined in the package.json
               break
             default:
               echo "No Publishing Branch"
@@ -35,10 +38,11 @@ def call(){
           }
 
           // let version & publish
-          sh sprintf("npm version %s --no-git-tag-version", version)
-          sh sprintf("npm publish --tag %s", npmChannel)
-          sh sprintf("git tag -a \"v%s\" -m \"%s\"", version, version)
-          sh sprintf("git push --tags")
+          sh "npm version $version --no-git-tag-version"
+          sh "npm publish --tag $npmChannel"
+          sh "git tag -a \"v$version\" -m \"$version\""
+          sh "git push --tags"
+
         } else {
           echo "No publishing branch"
         }
@@ -46,4 +50,5 @@ def call(){
         sh "rm .npmrc"
       }
     }
+  }
 }

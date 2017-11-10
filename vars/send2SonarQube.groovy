@@ -1,6 +1,7 @@
 #!/usr/bin/groovy
 
 def call(){
+  echo "We could send data to SonarQube"
   //
   //  def name = env.JOB_NAME
   //  def key = name.replaceAll('[^\\w\\d-_:\\. ]', '_')

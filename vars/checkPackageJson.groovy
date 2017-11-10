@@ -41,7 +41,6 @@ def call (){
 
   // 
   (generalTargets + uiTargets).each{ target ->
-    echo target
     env["HAS_${target.replace('.','_').toUpperCase()}"] = packageJson.scripts[target] != null
   }
   
