@@ -55,11 +55,18 @@ def call() {
           send2SonarQube()
           
         }
-        // post {
-        //   success {
-        //     // publish coverage report
-        //   }
-        // }
+        post {
+          success {
+             publishHTML (target: [
+              allowMissing: false,
+              alwaysLinkToLastBuild: false,
+              keepAll: true,
+              reportDir: 'coverage',
+              reportFiles: 'index.html',
+              reportName: "NYC Report"
+             ])
+          }
+        }
       }
       stage('Publish'){
         steps {
