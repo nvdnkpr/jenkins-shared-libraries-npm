@@ -48,15 +48,15 @@ def call() {
       }
       stage('Build'){
         steps {
-          if (env.HAS_BUILD) { compileMain() }
-          if (env.HAS_BUILD_E2E) { compileAndDeployE2E() }
+          compileMain()
+          compileAndDeployE2E()
         }
       }
 
       stage('Test'){
         steps {
-          if (env.HAS_TEST) { runUnitTests() }
-          if (env.HAS_TEST_E2E) { runE2ETests() }
+          runUnitTests()
+          runE2ETests()
 
           send2SonarQube()
         }

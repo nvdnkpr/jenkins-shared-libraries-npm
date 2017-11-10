@@ -2,5 +2,7 @@
 
 def call(){
   // build main app
-  sh "npm run build"
+  if (env.HAS_BUILD){
+    sh "npm run build"
+  }
 }
