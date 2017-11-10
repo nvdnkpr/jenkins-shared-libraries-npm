@@ -1,5 +1,8 @@
 #!/usr/bin/groovy
 
+import com.cloudbees.groovy.cps.NonCPS
+
+@NonCPS
 def call(projectMap, projectPrefix = ''){
   def injectIntoEnv(map, prefix){
     map.each { k, v ->
