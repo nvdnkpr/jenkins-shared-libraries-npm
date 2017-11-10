@@ -8,6 +8,7 @@ def call() {
         steps {
           // Read Configuration
           readConfiguration()
+          error 'intentional abort'
           
           // set and get info about this build
           setGitConfig(env.GIT_NAME, env.GIT_MAIL)
@@ -32,11 +33,13 @@ def call() {
         steps {
           // package
           checkPackageJson()
+          
+          echo sh(script: 'env|sort', returnStdout: true)
 
           // update packages
           updateNPMPackages()
 
-          runLinter()
+          // runLinter()
         }
         // post {
         //   success {
