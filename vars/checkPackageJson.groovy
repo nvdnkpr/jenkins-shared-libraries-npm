@@ -8,15 +8,16 @@ def call (){
 
 
   // check if needed npm package scripts for a certain module type are defined
-  generalTargets = ['lint', 'build', 'test']
+  codeTargets = ['lint']
+  generalTargets = ['build', 'test']
   uiTargets = ['build.e2e', 'test.e2e', 'pack']
 
   scriptsMap = [
-    "app": generalTargets + uiTargets,
-    "feature": generalTargets + uiTargets,
-    "ui": generalTargets + uiTargets,
-    "connector": generalTargets,
-    "client": generalTargets,
+    "app": codeTargets + generalTargets + uiTargets,
+    "feature": codeTargets + generalTargets + uiTargets,
+    "ui": codeTargets + generalTargets + uiTargets,
+    "connector": codeTargets + generalTargets,
+    "client": codeTargets + generalTargets,
     "npm": generalTargets
   ]
 
