@@ -27,8 +27,8 @@ def call() {
 
         // Setup Tools
         setupTools {
-          "NodeJS 8.7.0": "bin",
-          "SonarQube Scanner 3.0": "bin"  
+          "NodeJS 8.7.0" = "bin",
+          "SonarQube Scanner 3.0" = "bin"  
         }
       }
       stage('Prepare'){
