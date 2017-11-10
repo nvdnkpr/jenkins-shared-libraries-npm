@@ -1,14 +1,13 @@
 #!/usr/bin/groovy
 
 def call(body){
-  def toolList = [:]
-  body.resolveStrategy = Closure.DELEGATE_FIRST
-  body.delegate = config
-  body()
+  // def toolList = [:]
+  // body.resolveStrategy = Closure.DELEGATE_FIRST
+  // body.delegate = config
+  // body()
 
-  toolList.each{ toolName, binPath -> 
-    def toolRef = tool toolName
+  def nodeJs = tool "NodeJS 8.7.0"
+  def sonarScanner = tool "SonarQube Scanner 3.0"
 
-    env.PATH = "$toolRef/binPath:$PATH"
-  }
+  env.PATH = "$nodeJs/bin:$sonarScanner/bin:$PATH"
 }
