@@ -2,8 +2,8 @@
 
 import com.cloudbees.groovy.cps.NonCPS
 
-@NonCPS
 def call(projectMap, projectPrefix = ''){
+  @NonCPS
   def injectIntoEnv(map, prefix){
     map.each { k, v ->
       def envKey = "${prefix.toUpperCase()}_${k.toUpperCase()}" 
