@@ -50,12 +50,15 @@ def call() {
         steps {
           runUnitTests()
           
-          // runE2ETests()
+          runE2ETests()
 
           send2SonarQube()
           
         }
         post {
+          always {
+            junit 'junit/*.xml'
+          }
           success {
              publishHTML (target: [
               allowMissing: false,
