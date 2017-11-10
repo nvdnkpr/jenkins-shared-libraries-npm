@@ -4,7 +4,7 @@ def call (){
   def packageFile = readFile('package.json')
   def packageJson = parseJson(packageFile)
 
-  map2env(packageJson, 'package_json')
+  map2env(packageJson, 'package_json', ['dependencies', 'devDependencies','nyc'])
 
 
   // check if needed npm package scripts for a certain module type are defined
