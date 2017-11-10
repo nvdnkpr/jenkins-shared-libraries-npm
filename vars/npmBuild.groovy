@@ -7,11 +7,9 @@ def call() {
       stage('Bootstrap'){
         steps {
           // Read Configuration
-          // Read main config
-          mainConfig = configFileReader('main', '', true)
-          // Read stage configurations
-          mainConfig.configurations.each { fileId -> configFileReader(fileId, "${fileId.replace('-','_')}", true) }
-
+          readConfiguration()
+          
+          // set and get info about this build
           setGitConfig(env.GIT_NAME, env.GIT_MAIL)
           getRepoInfo()
           getBuildContext()
