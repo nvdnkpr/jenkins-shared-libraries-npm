@@ -42,21 +42,18 @@ def call() {
       stage('Build'){
         steps {
           compileMain()
-          error 'compileMain'
           compileAndDeployE2E()
-          error 'compileAndDeployE2E'
         }
       }
 
       stage('Test'){
         steps {
           runUnitTests()
-          error 'runUnitTests'
-          runE2ETests()
-          error 'runE2ETests'
+          
+          // runE2ETests()
 
           send2SonarQube()
-          error 'SonarQube'
+          
         }
         // post {
         //   success {
@@ -67,7 +64,6 @@ def call() {
       stage('Publish'){
         steps {
           publish2NpmRepo()
-          error 'publish2NpmRepo'
         }
         // Publish to Nexus
       }
