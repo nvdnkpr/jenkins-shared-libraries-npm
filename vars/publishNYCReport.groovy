@@ -1,5 +1,5 @@
 def call (){
-  if (env.HAS_TEST_E2E){
+  if (env.HAS_TEST_E2E.toBoolean()){
     publishHTML (
       target: [
         allowMissing: false,
