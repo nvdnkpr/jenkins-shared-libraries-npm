@@ -1,5 +1,8 @@
 #!/usr/bin/groovy
 
+import groovy.json.JsonOutput
+
+
 def call (){
   def packageFile = readFile('package.json')
   def packageJson = parseJson(packageFile)
@@ -40,10 +43,42 @@ def call (){
     error errorString
   }
 
-  // 
+  // set boolean env variables to specify if a certain task exists as script
   (codeTargets + generalTargets + uiTargets).each{ target ->
     env["HAS_${target.replace('.','_').toUpperCase()}"] = packageJson.scripts[target] != null
   }
+  
+  // add/change certain packages only for the CI Server
+    // def additionalPackages = ["semantic-release"]; // "eslint-configuration-vmt-ci"
+    // additionalPackages.each{ packageName -> packageJson.devDependencies[packageName] = "latest" }
+    
+  // add/change certain scripts only for the CI Server
+    // packageJson.scripts["semantic-release"] = "semantic-release pre && npm publish && semantic-release post"
+    packageJson.scripts["test"]: "JUNIT_REPORT_PATH=./junit/report.xml "+ packageJson.scripts["test"]
+    // script "lint": add missing or replace existing lint, add a lint configuration that applies to the CI Server env
+
+  // add/change certain properties
+    // add publishConfig
+    packageJson.publishConfig = { "registry": env.PUBLISHING_REGISTRY }
+
+    // add/modify author
+    packageJson.author = "${env.PUBLISHING_PUBLISHER_NAME} <${env.PUBLISHING_PUBLISHER_EMAIL}>"
+
+    // add/modify license
+    // packageJson.license = "${env.PUBLISHING_LICENSE}"
+    
+    // e.g. for semantic-release under the "release" property
+    // packageJson["release"] = {}
+    
+    // e.g. for nyc under the "nyc" property since this can have been changed 
+    // packageJson["nyc"] = {
+      // "extends" : "@vmt/nyc-config"
+    // }
+
+
+  //   
+  def json = JsonOutput.prettyPrint(JsonOutput.toJson(packageJson))
+  writeFile file: 'package.json', text: json
   
   env.MODULE_TYPE = moduleType
 }
