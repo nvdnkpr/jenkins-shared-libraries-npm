@@ -21,7 +21,8 @@ def call (){
     "ui": codeTargets + generalTargets + uiTargets,
     "connector": codeTargets + generalTargets,
     "client": codeTargets + generalTargets,
-    "npm": generalTargets
+    "npm": generalTargets,
+    "config": []
   ]
 
   def repoModulType = env.REPO_NAME.split('-')[0]
@@ -31,21 +32,28 @@ def call (){
   def moduleType = possibleModuleTypes.any{ it == repoModulType } ? repoModulType : 'npm'
 
   // get intersection of scripts in package.json and needed scripts from the scripts map
-  def packageScripts = packageJson.scripts.keySet() as List
-  def commonScripts = packageScripts.intersect(scriptsMap[moduleType])
-  // if the sizes don't match we miss one more needed scripts
-  if (commonScripts.size() != scriptsMap[moduleType].size()){
-    def errorString = [
-      "Needed package scripts for module type ${moduleType}: [${scriptsMap[moduleType]}]",
-      "Found: [${commonScripts}]"
-    ].join("\n")
-      
-    error errorString
+  if (packageJson.scripts != null){
+    def packageScripts = packageJson.scripts.keySet() as List
+    def commonScripts = packageScripts.intersect(scriptsMap[moduleType])
+
+    // if the sizes don't match we miss one more needed scripts
+    if (commonScripts.size() < scriptsMap[moduleType].size()){
+      def errorString = [
+        "Needed package scripts for module type ${moduleType}: [${scriptsMap[moduleType]}]",
+        "Found: [${commonScripts}]"
+      ].join("\n")
+        
+      error errorString
+    }
   }
 
   // set boolean env variables to specify if a certain task exists as script
-  (codeTargets + generalTargets + uiTargets).each{ target ->
-    env["HAS_${target.replace('.','_').toUpperCase()}"] = packageJson.scripts[target] != null
+  if (packageJson.scripts == null){
+    packageJson.scripts = [:]
+  }
+  
+  (codeTargets + generalTargets + uiTargets).each{ 
+    target -> env["HAS_${target.replace('.','_').toUpperCase()}"] = packageJson.scripts[target] != null
   }
   
   // add/change certain packages only for the CI Server
@@ -54,18 +62,22 @@ def call (){
     
   // add/change certain scripts only for the CI Server
     // packageJson.scripts["semantic-release"] = "semantic-release pre && npm publish && semantic-release post"
-    packageJson.scripts["test"]: "JUNIT_REPORT_PATH=./junit/report.xml "+ packageJson.scripts["test"]
+
+    if (packageJson.scripts["test"] != null){
+      packageJson.scripts["test"] = "JUNIT_REPORT_PATH=./junit/report.xml " + packageJson.scripts["test"]
+    }
     // script "lint": add missing or replace existing lint, add a lint configuration that applies to the CI Server env
 
   // add/change certain properties
     // add publishConfig
-    packageJson.publishConfig = { "registry": env.PUBLISHING_REGISTRY }
+    packageJson.publishConfig = [:]
+    packageJson.publishConfig["registry"] = env.PUBLISHING_REGISTRY
 
     // add/modify author
     packageJson.author = "${env.PUBLISHING_PUBLISHER_NAME} <${env.PUBLISHING_PUBLISHER_EMAIL}>"
 
     // add/modify license
-    // packageJson.license = "${env.PUBLISHING_LICENSE}"
+    packageJson.license = "${env.PUBLISHING_LICENSE}"
     
     // e.g. for semantic-release under the "release" property
     // packageJson["release"] = {}
@@ -79,6 +91,8 @@ def call (){
   //   
   def json = JsonOutput.prettyPrint(JsonOutput.toJson(packageJson))
   writeFile file: 'package.json', text: json
+
+
   
   env.MODULE_TYPE = moduleType
 }
