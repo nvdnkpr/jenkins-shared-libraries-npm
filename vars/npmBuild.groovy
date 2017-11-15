@@ -57,17 +57,10 @@ def call() {
         }
         post {
           always {
-            junit 'junit/*.xml'
+            publishJUnitReport()
           }
           success {
-             publishHTML (target: [
-              allowMissing: false,
-              alwaysLinkToLastBuild: false,
-              keepAll: true,
-              reportDir: 'coverage',
-              reportFiles: 'index.html',
-              reportName: "NYC Report"
-             ])
+            publishNYCReport()
           }
         }
       }
