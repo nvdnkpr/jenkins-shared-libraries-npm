@@ -38,7 +38,7 @@ def call(){
           }
 
           // let version & publish
-          sh "npm version $version --no-git-tag-version"
+          sh "npm version $version --no-git-tag-version  --allow-same-version"
           sh "npm publish --tag $npmChannel"
           sh "git tag -a \"v$version\" -m \"$version\""
           sh "git push --tags"
