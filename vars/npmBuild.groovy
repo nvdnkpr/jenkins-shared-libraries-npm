@@ -57,9 +57,8 @@ def call() {
           always {
             publishJUnitReport()
             
-            send2SonarQube() 
-          }
-          success {
+            send2SonarQube()
+
             publishNYCReport()
           }
         }
