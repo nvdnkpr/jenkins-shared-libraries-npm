@@ -52,12 +52,12 @@ def call() {
           
           runE2ETests()
 
-          send2SonarQube()
-          
         }
         post {
           always {
             publishJUnitReport()
+            
+            send2SonarQube() 
           }
           success {
             publishNYCReport()
