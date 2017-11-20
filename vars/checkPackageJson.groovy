@@ -22,7 +22,7 @@ def call (){
     "connector": codeTargets + generalTargets,
     "client": codeTargets + generalTargets,
     "npm": generalTargets,
-    "config": []
+    "meta": []
   ]
 
   def repoModulType = env.REPO_NAME.split('-')[0]
