@@ -42,10 +42,12 @@ def call(){
           sh "npm publish --tag $npmChannel"
           // tag pushing only on mastergst
           
+          /*
           if (branchType == "master"){
             sh "git tag -a \"v$version\" -m \"$version\""
             sh "git push --tags"
           }
+          */
 
         } else {
           echo "No publishing branch"
